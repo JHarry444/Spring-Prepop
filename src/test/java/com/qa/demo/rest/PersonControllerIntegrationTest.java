@@ -62,7 +62,7 @@ public class PersonControllerIntegrationTest {
 	}
 
 	@Test
-	public void testZZZ() throws Exception {
+	public void testReadAll() throws Exception {
 		final List<Person> PEOPLE = new ArrayList<>();
 		PEOPLE.add(TEST_SAVED_PERSON);
 
