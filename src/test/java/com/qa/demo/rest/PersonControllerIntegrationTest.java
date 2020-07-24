@@ -20,8 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +28,6 @@ import com.qa.demo.persistence.domain.Person;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Sql(scripts = "classpath:person-data.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class PersonControllerIntegrationTest {
 
 	@Autowired
@@ -62,7 +59,7 @@ public class PersonControllerIntegrationTest {
 	}
 
 	@Test
-	public void testZZZ() throws Exception {
+	public void testReadAll() throws Exception {
 		final List<Person> PEOPLE = new ArrayList<>();
 		PEOPLE.add(TEST_SAVED_PERSON);
 
