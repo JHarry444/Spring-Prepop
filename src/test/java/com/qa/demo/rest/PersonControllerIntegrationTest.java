@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qa.demo.persistence.domain.Person;
 
@@ -42,19 +40,17 @@ public class PersonControllerIntegrationTest {
 	@Autowired
 	private ObjectMapper mapper;
 
-	private final Person TEST_PERSON = new Person(null, 26, "Jordan Harrison");
-
 	private final Person TEST_SAVED_PERSON = new Person(1L, 26, "Jordan Harrison");
 
 	@Test
-	public void testCreate() throws JsonProcessingException, Exception {
-		String resultString = this.mockMVC
-				.perform(post("/person/create").contentType(MediaType.APPLICATION_JSON)
-						.content(this.mapper.writeValueAsString(TEST_PERSON)))
-				.andExpect(status().isCreated()).andReturn().getRequest().getContentAsString();
+	public void testCreate() throws Exception {
+		final Person newPerson = new Person(null, 26, "Chris Perrins");
+		final Person savedPerson = new Person(4L, newPerson.getAge(), newPerson.getName());
 
-		Person result = this.mapper.readValue(resultString, Person.class);
-		assertThat(result).isEqualTo(TEST_PERSON);
+		this.mockMVC
+				.perform(post("/person/create").contentType(MediaType.APPLICATION_JSON)
+						.content(this.mapper.writeValueAsString(newPerson)))
+				.andExpect(status().isCreated()).andExpect(content().json(this.mapper.writeValueAsString(savedPerson)));
 	}
 
 	@Test
@@ -66,15 +62,12 @@ public class PersonControllerIntegrationTest {
 
 	@Test
 	public void testReadAll() throws Exception {
-		final List<Person> PEOPLE = new ArrayList<>();
-		PEOPLE.add(TEST_SAVED_PERSON);
-
 		final String resultString = this.mockMVC
 				.perform(request(HttpMethod.GET, "/person/readAll").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
 		List<Person> results = Arrays.asList(mapper.readValue(resultString, Person[].class));
-		assertThat(results).contains(this.TEST_PERSON).hasSize(3);
+		assertThat(results).contains(this.TEST_SAVED_PERSON).hasSize(3);
 	}
 
 	@Test
